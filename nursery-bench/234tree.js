@@ -265,11 +265,40 @@
         }
     }
 
+    function traverse(tree, f) {
+        switch (tree.type) {
+            case 'empty':
+                return;
+            case '2node':
+                traverse(tree.b0, f);
+                f(tree.k0, tree.v0);
+                traverse(tree.b1, f);
+                return;
+            case '3node':
+                traverse(tree.b0, f);
+                f(tree.k0, tree.v0);
+                traverse(tree.b1, f);
+                f(tree.k1, tree.v1);
+                traverse(tree.b2, f);
+                return;
+            case '4node':
+                traverse(tree.b0, f);
+                f(tree.k0, tree.v0);
+                traverse(tree.b1, f);
+                f(tree.k1, tree.v1);
+                traverse(tree.b2, f);
+                f(tree.k2, tree.v2);
+                traverse(tree.b3, f);
+                return;
+        }
+    }
+
     global.Tree234 = {
         empty: () => EmptyNode,
         set: (tree, k, v) => {
             return node_set(tree, k, v, undefined);
         },
+        traverse: traverse,
     };
 })(this);
 
