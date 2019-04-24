@@ -265,6 +265,37 @@
         }
     }
 
+    function get(tree, k) {
+        switch (tree.type) {
+            case 'empty':
+                break;
+            case '2node':
+                if (k < tree.k0) {
+                    return get(tree.b0, k);
+                } else {
+                    return get(tree.b1, k);
+                }
+            case '3node':
+                if (k < tree.k0) {
+                    return get(tree.b0, k);
+                } else if (k < tree.k1) {
+                    return get(tree.b1, k);
+                } else {
+                    return get(tree.b2, k);
+                }
+            case '4node':
+                if (k < tree.k0) {
+                    return get(tree.b0, k);
+                } else if (k < tree.k1) {
+                    return get(tree.b1, k);
+                } else if (k < tree.k2) {
+                    return get(tree.b2, k);
+                } else {
+                    return get(tree.b3, k);
+                }
+        }
+    }
+
     function traverse(tree, f) {
         switch (tree.type) {
             case 'empty':
@@ -298,6 +329,7 @@
         set: (tree, k, v) => {
             return node_set(tree, k, v, undefined);
         },
+        get: get,
         traverse: traverse,
     };
 })(this);
