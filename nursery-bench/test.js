@@ -3,9 +3,14 @@
 gcparam('pretenureThreshold', 100);
 
 load('immutable.js');
+load('234tree.js');
 
 function initialData(data_size) {
-    return Immutable.Range(0, data_size).map(x => "value " + x).toMap();
+    var tree = Tree234.empty();
+    for (var i = 0; i < data_size; i++) {
+        tree = Tree234.set(tree, i, "value " + i);
+    }
+    return tree;
 }
 
 function bench(label, f) {
@@ -47,9 +52,9 @@ function test(data_size, iterations) {
         var d = initial;
         for (var i = 0; i < iterations*3; i += 3) {
             // Each iteration retrives two random items and sets one random item.
-            d.get(randoms[i] % data_size);
-            d.get(randoms[i+1] % data_size);
-            d = d.set(randoms[i+2] % data_size, "iteration " + i);
+            Tree234.get(d, randoms[i] % data_size);
+            Tree234.get(d, randoms[i+1] % data_size);
+            d = Tree234.set(d, randoms[i+2] % data_size, "iteration " + i);
         }
         return d;
     }
