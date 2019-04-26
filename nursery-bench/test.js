@@ -12,7 +12,7 @@ function initialData(data_size) {
     return tree;
 }
 
-function bench(label, f) {
+function bench(f) {
     const start = dateNow();
     const r = f();
     const end = dateNow();
@@ -37,7 +37,7 @@ function makeRandoms() {
 const randoms = makeRandoms();
 
 console.log("Getting baseline memory usage");
-bench("GC", () => gc('shrinking'));
+bench(() => gc('shrinking'));
 console.log("randoms size: " + Math.floor(byteSize(randoms) / 1024) + "KB");
 console.log("Total Heap: " + (gcparam('gcBytes') / 1024) + "KB");
 
@@ -58,7 +58,7 @@ function test(data_size, iterations) {
         return d;
     }
 
-    const test_time = bench("Run test", () => test_loop(initial_)).time;
+    const test_time = bench(() => test_loop(initial_)).time;
 
     gc('shrinking');
     const total_heap_after = gcparam('gcBytes') / 1024;
