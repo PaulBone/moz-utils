@@ -42,12 +42,12 @@ console.log("randoms size: " + Math.floor(byteSize(randoms) / 1024) + "KB");
 console.log("Total Heap: " + (gcparam('gcBytes') / 1024) + "KB");
 
 function test(data_size, iterations) {
-    const initial_ = initialData(data_size);
+    const initial = initialData(data_size);
     const gc_time_1 = bench(() => gc('shrinking')).time;
 
     const total_heap_before = gcparam('gcBytes') / 1024;
 
-    function test_loop(initial) {
+    function test_loop() {
         var d = initial;
         for (var i = 0; i < iterations*3; i += 3) {
             // Each iteration retrives two random items and sets one random item.
@@ -58,7 +58,7 @@ function test(data_size, iterations) {
         return d;
     }
 
-    const test_time = bench(() => test_loop(initial_)).time;
+    const test_time = bench(test_loop).time;
     const gc_time_2 = bench(() => gc('shrinking')).time;
 
     const total_heap_after = gcparam('gcBytes') / 1024;
