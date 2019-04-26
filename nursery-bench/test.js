@@ -2,7 +2,6 @@
 // Disable pretenuring
 gcparam('pretenureThreshold', 100);
 
-load('immutable.js');
 load('234tree.js');
 
 function initialData(data_size) {
