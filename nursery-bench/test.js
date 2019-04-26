@@ -62,11 +62,11 @@ function test(data_size, iterations) {
     const gc_time_2 = bench(() => gc('shrinking')).time;
 
     const total_heap_after = gcparam('gcBytes') / 1024;
-    
+
     console.log(`Size: ${data_size}, Heap: ${total_heap_before}KB delta ${total_heap_after - total_heap_before}KB Time: ${test_time}ms`);
     console.log(`\tGC time: ${gc_time_1 + gc_time_2}ms`);
 
-} 
+}
 
 // The data for this test has 1,000,000 items stored into a map.
 console.log("\nwarmup");
