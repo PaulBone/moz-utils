@@ -43,7 +43,7 @@ console.log("Total Heap: " + (gcparam('gcBytes') / 1024) + "KB");
 
 function test(data_size, iterations) {
     const initial_ = initialData(data_size);
-    gc('shrinking');
+    const gc_time_1 = bench(() => gc('shrinking')).time;
 
     const total_heap_before = gcparam('gcBytes') / 1024;
 
@@ -59,11 +59,12 @@ function test(data_size, iterations) {
     }
 
     const test_time = bench(() => test_loop(initial_)).time;
+    const gc_time_2 = bench(() => gc('shrinking')).time;
 
-    gc('shrinking');
     const total_heap_after = gcparam('gcBytes') / 1024;
     
     console.log(`Size: ${data_size}, Heap: ${total_heap_before}KB delta ${total_heap_after - total_heap_before}KB Time: ${test_time}ms`);
+    console.log(`\tGC time: ${gc_time_1 + gc_time_2}ms`);
 
 } 
 
