@@ -10,11 +10,18 @@
     Node4 = Object.create(Node, {'type': {'value': '4node' }});
 
     function error(msg) {
-        printErr(msg);
-        quit();
+        throwError(msg);
+    }
+
+    function assert(expr) {
+        if (expr === undefined) {
+            error("Undefined");
+        }
     }
 
     function node2(key, value, left, right) {
+        assert(left);
+        assert(right);
         return Object.create(Node2, {
             'k0': {'value': key},
             'v0': {'value': value},
@@ -24,6 +31,9 @@
     }
 
     function node3(k0, v0, k1, v1, b0, b1, b2) {
+        assert(b0);
+        assert(b1);
+        assert(b2);
         return Object.create(Node3, {
             'k0': {'value': k0 },
             'v0': {'value': v0 },
@@ -36,6 +46,10 @@
     }
 
     function node4(k0, v0, k1, v1, k2, v2, b0, b1, b2, b3) {
+        assert(b0);
+        assert(b1);
+        assert(b2);
+        assert(b3);
         return Object.create(Node4, {
             'k0': {'value': k0 },
             'v0': {'value': v0 },
