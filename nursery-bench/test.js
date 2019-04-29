@@ -1,8 +1,14 @@
 
+// TODO: for my own curiosity find out why the 234 tree is MUCH slower than
+// the splay tree.  I think it's that it branches less and therefor does
+// more pointer-following.
+
 // Disable pretenuring
 gcparam('pretenureThreshold', 100);
 
 load('234tree.js');
+
+const samples = 20;
 
 function initialData(data_size) {
     var tree = Tree234.empty();
@@ -12,11 +18,21 @@ function initialData(data_size) {
     return tree;
 }
 
-function bench(f) {
-    const start = dateNow();
-    const r = f();
-    const end = dateNow();
-    return { result: r, time: (end - start), };
+function bench(f, reps = 1) {
+    var sum = 0;
+    var sums = 0;
+    var r;
+    for (var i = 0; i < reps; i++) {
+        const start = dateNow();
+        r = f();
+        const end = dateNow();
+        const dur = end - start;
+        sum += dur;
+        sums += dur*dur;
+    }
+    const mean = sum / reps;
+    const stdev = (sums / reps) - (mean * mean);
+    return { result: r, time: (sum / reps), stdev: stdev };
 }
 
 function randInt(max) {
@@ -41,8 +57,19 @@ bench(() => gc('shrinking'));
 console.log("randoms size: " + Math.floor(byteSize(randoms) / 1024) + "KB");
 console.log("Total Heap: " + (gcparam('gcBytes') / 1024) + "KB");
 
+function log_header() {
+    console.log("size,create time,heap before,heap after, test time, stdev, gc time 1,gc time 2");
+}
+
+function log(size, create_time, heap_before, heap_after, test_time,
+        test_stdev, gc_time_1, gc_time_2) {
+    console.log(`${size},${create_time},${heap_before},${heap_after},${test_time},${test_stdev},${gc_time_1},${gc_time_2}`);
+}
+
 function test(data_size, iterations) {
-    const initial = initialData(data_size);
+    const initial_bench = bench(() => initialData(data_size));
+    const initial = initial_bench.result;
+
     const gc_time_1 = bench(() => gc('shrinking')).time;
 
     const total_heap_before = gcparam('gcBytes') / 1024;
@@ -58,26 +85,39 @@ function test(data_size, iterations) {
         return d;
     }
 
-    const test_time = bench(test_loop).time;
+    const test = bench(test_loop, samples);
     const gc_time_2 = bench(() => gc('shrinking')).time;
 
     const total_heap_after = gcparam('gcBytes') / 1024;
 
-    console.log(`Size: ${data_size}, Heap: ${total_heap_before}KB delta ${total_heap_after - total_heap_before}KB Time: ${test_time}ms`);
-    console.log(`\tGC time: ${gc_time_1 + gc_time_2}ms`);
-
+    //console.log(`Size: ${data_size}, Heap: ${total_heap_before}KB delta ${total_heap_after - total_heap_before}KB Time: ${test_time}ms`);
+    //console.log(`\tGC time: ${gc_time_1 + gc_time_2}ms`);
+    //console.log(`\tInitial data: ${initial_bench.time}ms`);
+    log(data_size, initial_bench.time, total_heap_before, total_heap_after, 
+        test.time, test.stdev, gc_time_1, gc_time_2);
 }
 
 // The data for this test has 1,000,000 items stored into a map.
 console.log("\nwarmup");
-for (var i = 300*1000; i < 400*1000; i += 10*1000) {
-    test(i, 1000);
+test(40000, 50000);
+for (var i = 30*1000; i < 40*1000; i += 1*1000) {
+    // test(i, 100);
 }
+
+console.log("Re-aquiring baseline memory usage");
+bench(() => gc('shrinking'));
+console.log("randoms size: " + Math.floor(byteSize(randoms) / 1024) + "KB");
+console.log("Total Heap: " + (gcparam('gcBytes') / 1024) + "KB");
 
 console.log("\nrun test");
 gcparam('minNurseryBytes', 1024*1024);
 gcparam('maxNurseryBytes', 1024*1024);
-for (var i = 100; i < 10*1000; i += 100) {
-    test(i, 10000);
+log_header();
+for (var i = 50; i < 500; i += 10) {
+    test(i, 50*1000);
+}
+quit();
+for (var i = 500; i < 40*1000; i += 500) {
+    test(i, 50*1000);
 }
 
