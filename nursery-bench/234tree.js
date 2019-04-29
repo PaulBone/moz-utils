@@ -140,7 +140,7 @@
         }
         if (tree.k2 == k) {
             return node4(tree.k0, tree.v0, tree.k1, tree.v1, k, v,
-                tree.b0, tree.b1, tree.b2, tree.v3);
+                tree.b0, tree.b1, tree.b2, tree.b3);
         }
 
         if (tree.b0.type == 'empty') {
